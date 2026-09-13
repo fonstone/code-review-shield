@@ -10,6 +10,7 @@ config.yaml
 # 前端构建产物与依赖
 frontend/dist/
 frontend/node_modules/
+frontend/dev.log
 node_modules/
 
 # 运行时数据
