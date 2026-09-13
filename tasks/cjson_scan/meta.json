@@ -1,0 +1,21 @@
+{
+  "name": "cjson_scan",
+  "display_name": "cJSON使用规范扫描",
+  "description": "专项扫描 cJSON 库使用规范：Parse 返回值未检查、Delete 泄漏、无效指针解引用、Print 系列内存未释放等",
+  "engine_mode": "debate_selective",
+  "engine_config": {
+    "file_extensions": [".c", ".h"],
+    "content_keywords": ["cJSON_", "json_object", "json_parse"],
+    "exclude_paths": ["thirdparts", "vendor", "test"],
+    "max_files": 20,
+    "depth": 2,
+    "concurrency": 6
+  },
+  "ai_backend": "",
+  "target_scope": "business",
+  "notify_threshold": 15,
+  "timeout": 60,
+  "is_active": true,
+  "governance_mode": "standard",
+  "is_campaign": false
+}

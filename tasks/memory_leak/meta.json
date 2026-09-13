@@ -1,0 +1,21 @@
+{
+  "name": "memory_leak",
+  "display_name": "内存泄漏检测",
+  "description": "专项检测 C/C++ 代码中的内存泄漏风险：申请与释放失配、错误路径未释放、realloc 指针丢失等",
+  "engine_mode": "debate_full",
+  "engine_config": {
+    "file_extensions": [".c", ".cpp", ".cc", ".cxx", ".h", ".hpp"],
+    "content_keywords": ["malloc", "free", "new", "delete", "realloc"],
+    "exclude_paths": ["thirdparts", "vendor", "test"],
+    "max_files": 20,
+    "depth": 2,
+    "concurrency": 6
+  },
+  "ai_backend": "",
+  "target_scope": "business",
+  "notify_threshold": 10,
+  "timeout": 60,
+  "is_active": true,
+  "governance_mode": "defect_tracking",
+  "is_campaign": false
+}

@@ -1,0 +1,21 @@
+{
+  "name": "float_comparison",
+  "display_name": "浮点比较检测",
+  "description": "专项检测浮点数直接相等比较、epsilon 缺失、NaN 判断错误等数值精度缺陷",
+  "engine_mode": "chunked_fast",
+  "engine_config": {
+    "file_extensions": [".c", ".cpp", ".h", ".hpp"],
+    "content_keywords": ["==", "!=", "float", "double"],
+    "exclude_paths": ["thirdparts", "vendor", "test"],
+    "max_files": 20,
+    "depth": 2,
+    "concurrency": 6
+  },
+  "ai_backend": "",
+  "target_scope": "business",
+  "notify_threshold": 20,
+  "timeout": 60,
+  "is_active": true,
+  "governance_mode": "standard",
+  "is_campaign": false
+}

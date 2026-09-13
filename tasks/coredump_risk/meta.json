@@ -1,0 +1,21 @@
+{
+  "name": "coredump_risk",
+  "display_name": "Coredump风险排查",
+  "description": "专项排查可能导致进程崩溃（SIGSEGV/SIGABRT）的代码缺陷：空指针解引用、缓冲区溢出、数组越界、memcpy 长度错误、未初始化指针等",
+  "engine_mode": "debate_full",
+  "engine_config": {
+    "file_extensions": [".c", ".cpp", ".cc", ".cxx", ".h", ".hpp"],
+    "content_keywords": ["memcpy", "strcpy", "sprintf", "array", "pointer", "NULL"],
+    "exclude_paths": ["thirdparts", "vendor", "test"],
+    "max_files": 20,
+    "depth": 2,
+    "concurrency": 6
+  },
+  "ai_backend": "",
+  "target_scope": "business",
+  "notify_threshold": 5,
+  "timeout": 60,
+  "is_active": true,
+  "governance_mode": "defect_tracking",
+  "is_campaign": false
+}

@@ -1,0 +1,103 @@
+# =============================================================================
+# Code-Shield Nginx 反向代理配置示例
+# 使用方式：
+#   1. 复制到 /etc/nginx/conf.d/code-shield.conf（或 sites-available 并建立软链）
+#   2. 替换 server_name、SSL 证书路径为实际值
+#   3. nginx -t 校验通过后执行 systemctl reload nginx
+# 说明：
+#   - 后端监听地址需与 config.yaml 中 server.port 保持一致（默认 127.0.0.1:8080）
+#   - 前端静态资源目录为部署目录下的 dist（由 scripts/deploy.sh 安装）
+# =============================================================================
+
+# 后端服务地址（长连接复用）
+upstream code_shield_backend {
+    server 127.0.0.1:8080;
+    keepalive 32;
+}
+
+# ---------------------------------------------------------------------------
+# HTTP 服务：仅用于跳转 HTTPS
+# 如无证书或内网部署，可删除 return 301，将下方 443 的 location 配置复制过来直接使用
+# ---------------------------------------------------------------------------
+server {
+    listen 80;
+    server_name code-shield.example.com;
+
+    # 强制跳转 HTTPS
+    return 301 https://$host$request_uri;
+}
+
+# ---------------------------------------------------------------------------
+# HTTPS 服务：前端静态资源 + API 反向代理
+# ---------------------------------------------------------------------------
+server {
+    listen 443 ssl http2;
+    server_name code-shield.example.com;
+
+    # SSL 证书（替换为实际路径）
+    ssl_certificate     /etc/nginx/ssl/code-shield.crt;
+    ssl_certificate_key /etc/nginx/ssl/code-shield.key;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 10m;
+
+    # 上传大小限制（报告导入、代码包上传等场景）
+    client_max_body_size 50m;
+
+    # gzip 压缩，降低前端静态资源与 JSON 响应体积
+    gzip on;
+    gzip_min_length 1k;
+    gzip_comp_level 5;
+    gzip_vary on;
+    gzip_types text/plain text/css application/json application/javascript
+               text/xml application/xml application/xml+rss image/svg+xml;
+
+    # 访问日志（按需开启）
+    access_log /var/log/nginx/code-shield.access.log;
+    error_log  /var/log/nginx/code-shield.error.log;
+
+    # -----------------------------------------------------------------------
+    # API 反向代理：/api/ 全部转发到 Go 后端
+    # -----------------------------------------------------------------------
+    location /api/ {
+        proxy_pass http://code_shield_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection        "";
+
+        # LLM 扫描任务耗时长，放宽代理超时
+        proxy_connect_timeout 60s;
+        proxy_read_timeout    300s;
+        proxy_send_timeout    300s;
+
+        # 大报告导出场景关闭缓冲，避免内存占用过高
+        proxy_buffering off;
+    }
+
+    # -----------------------------------------------------------------------
+    # 前端静态资源（React 构建产物 frontend/dist）
+    # -----------------------------------------------------------------------
+    root  /opt/code-shield/dist;
+    index index.html;
+
+    # Vite 构建的带 hash 静态资源：长缓存
+    location /assets/ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    # SPA 路由回退：非静态文件请求统一交给 index.html，避免刷新 404
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # 禁止访问隐藏文件（.git、.env 等）
+    location ~ /\. {
+        deny all;
+    }
+}

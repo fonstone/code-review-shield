@@ -1,0 +1,77 @@
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #0d0f16;
+}
+
+/* 侧边栏 Logo */
+.app-logo {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  user-select: none;
+}
+
+/* 运行轨迹日志 */
+.stage-log {
+  margin: 0;
+  max-height: 200px;
+  overflow: auto;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* 缺陷代码片段 */
+.finding-snippet {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+  line-height: 1.7;
+  overflow: auto;
+}
+
+/* 悬挂租约行高亮 */
+.lease-hung > td {
+  background: rgba(255, 77, 79, 0.12) !important;
+}
+
+/* Markdown 正文微调 */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  margin: 12px 0 8px;
+}
+.markdown-body pre {
+  padding: 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: auto;
+}
+.markdown-body code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+.markdown-body blockquote {
+  margin: 8px 0;
+  padding: 4px 12px;
+  border-left: 3px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.6);
+}

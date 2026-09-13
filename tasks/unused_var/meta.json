@@ -1,0 +1,21 @@
+{
+  "name": "unused_var",
+  "display_name": "未使用变量检测",
+  "description": "专项检测未使用的局部变量、static 函数、函数参数、dead store 等代码冗余与潜在逻辑遗漏",
+  "engine_mode": "chunked",
+  "engine_config": {
+    "file_extensions": [".c", ".cpp", ".h", ".hpp"],
+    "content_keywords": ["int ", "char ", "static ", "void "],
+    "exclude_paths": ["thirdparts", "vendor", "test"],
+    "max_files": 50,
+    "depth": 2,
+    "concurrency": 8
+  },
+  "ai_backend": "",
+  "target_scope": "business",
+  "notify_threshold": 30,
+  "timeout": 60,
+  "is_active": true,
+  "governance_mode": "feedback",
+  "is_campaign": false
+}

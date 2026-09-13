@@ -1,0 +1,50 @@
+# =============================================================================
+# Code-Shield systemd 服务单元
+# 安装步骤：
+#   sudo cp code-shield.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now code-shield
+# 常用命令：
+#   systemctl status code-shield      # 查看状态
+#   journalctl -u code-shield -f      # 实时查看日志
+#   systemctl restart code-shield     # 重启服务
+# =============================================================================
+
+[Unit]
+Description=Code-Shield LLM Code Scan Platform
+Documentation=https://github.com/your-org/code-shield
+# 等待网络就绪（Git 拉取与 LLM API 调用均依赖网络）
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# 建议使用独立低权限用户运行（需自行创建并授权 /opt/code-shield 目录）
+User=code-shield
+Group=code-shield
+
+# 工作目录与可执行文件（由 scripts/deploy.sh 安装到 /opt/code-shield）
+WorkingDirectory=/opt/code-shield
+ExecStart=/opt/code-shield/code-shield-server
+
+# 配置文件路径（程序通过 CONFIG_PATH 环境变量读取）
+Environment=CONFIG_PATH=/opt/code-shield/config.yaml
+
+# 崩溃自动重启
+Restart=on-failure
+RestartSec=5
+
+# 日志统一输出到 journald（标准输出/标准错误）
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=code-shield
+
+# 资源限制：扫描任务并发较高，放宽文件描述符上限
+LimitNOFILE=65536
+
+# 安全加固（按需调整）
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

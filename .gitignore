@@ -1,0 +1,23 @@
+# Go 构建产物
+*.out
+*.test
+code-shield-server
+code-shield-server.exe
+
+# 运行时配置（含数据库密码/API Key，禁止提交）
+config.yaml
+
+# 前端构建产物与依赖
+frontend/dist/
+frontend/node_modules/
+node_modules/
+
+# 运行时数据
+tmp/
+logs/
+*.sqlite
+*.db
+
+# IDE
+.vscode/
+.idea/

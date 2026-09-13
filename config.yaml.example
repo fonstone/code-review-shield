@@ -1,0 +1,90 @@
+# Code-Shield 配置文件模板
+# 复制为 config.yaml 后按环境修改；config.yaml 不入库（.gitignore）
+
+server:
+  port: ":8080"
+  external_url: "http://localhost:8080"
+  # webhook告警地址（可选，notify_threshold触发时POST JSON）
+  webhook_url: ""
+
+storage:
+  root: "."
+  repo_dir: "tmp/repos"      # 代码仓库本地落盘目录
+  report_dir: "tmp/reports"  # 报告文件输出目录
+  log_dir: "logs"
+
+database:
+  driver: "postgres"          # postgres / sqlite
+  host: "127.0.0.1"
+  port: 5432
+  user: "code_shield"
+  password: "CodeShield618!"
+  dbname: "code_shield"
+  # dsn: ""                   # 可选：完整DSN优先于上述字段
+
+llm:
+  default_resource: "native"
+  resources:
+    - id: "native"
+      driver: "native"        # native(claude/opencode/agy/codex CLI)
+      model: "deepseek-v4-flash"
+      concurrent: 10          # 最大并发槽位
+      base_url: "https://api.deepseek.com/v1"
+      api_key: "sk-your-api-key"
+      timeout_sec: 300
+    # - id: "claude-cli"
+    #   driver: "claude"
+    #   model: "claude-sonnet-4-5"
+    #   concurrent: 2
+    #   cli_path: "claude"
+    #   timeout_sec: 600
+    # - id: "opencode-cli"
+    #   driver: "opencode"
+    #   model: "opencode-default"
+    #   concurrent: 2
+    #   cli_path: "opencode"
+    #   timeout_sec: 600
+
+scanner:
+  worker_count: 5             # Worker池数量
+  max_queue_size: 2000        # 队列容量
+  analysis:
+    max_retries: 3            # 引擎失败重试次数
+    retry_backoff_ms: 2000    # 重试退避基数(指数)
+
+debate:
+  enabled: true
+  fast_pass_enabled: true     # debate_selective快速通过
+  tiers:
+    tier1_hunter:             # 猎手：定位候选缺陷
+      resource: "native"
+      timeout_seconds: 7200
+    tier2_challenger:         # 质询者：交叉校验
+      resource: "native"
+      timeout_seconds: 1200
+    tier3_judge:              # 裁判：最终裁决
+      resource: "native"
+      timeout_seconds: 1800
+    tier4_synthesis:          # 汇总：AI总结报告
+      resource: "native"
+      timeout_seconds: 300
+
+governance:
+  fingerprint:
+    enabled: true
+    similarity_threshold: 0.85   # 四级漏斗第3级相似度阈值
+  lifecycle:
+    scope_guard_enabled: true    # Scope范围守卫
+    auto_resolve_missing: true   # 缺失文件缺陷自动RESOLVED
+
+auth:
+  enable_auth: true
+  jwt_secret: "change-me-in-production"  # 生产环境务必修改
+  token_ttl_hours: 24
+  users:
+    - username: "admin"
+      password: "admin123"
+      role: "admin"
+    - username: "viewer"
+      password: "viewer123"
+      role: "user"
